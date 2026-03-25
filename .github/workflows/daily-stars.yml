@@ -1,0 +1,37 @@
+name: Daily Star Tracker
+
+on:
+  schedule:
+    # Run daily at 09:00 UTC
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+    # Allow manual trigger for testing
+
+permissions:
+  contents: write  # Needed to commit updated stargazers.json
+
+env:
+  TRACKED_REPO: HDCharts/charts
+  DATA_FILE: data/stargazers.json
+
+jobs:
+  track-stars:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch stargazers and notify via Kilo webhook
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KILO_WEBHOOK_URL: ${{ secrets.KILO_WEBHOOK_URL }}
+        run: python scripts/track_stars.py
+
+      - name: Commit updated star data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ${{ env.DATA_FILE }}
+          git diff --cached --quiet || git commit -m "chore: update stargazers data [skip ci]"
+          git push

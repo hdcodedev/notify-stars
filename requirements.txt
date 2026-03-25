@@ -1,0 +1,4 @@
+# No external dependencies required.
+# All scripts use Python standard library only.
+# If you add AI SDK later, add it here, e.g.:
+# openai>=1.0.0
