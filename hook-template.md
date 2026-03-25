@@ -44,7 +44,7 @@ Placeholders:
 - `NEW_COUNT` — value of `summary.new_count`
 - `NET_CHANGE` — value of `summary.net_change`
 - `STARGAZER_LIST` — each user as `[username](profile_url)` separated by ` | `
-- `PROFILE_INSIGHTS` — one line per user with your sentence (use `\n` between lines)
+- `PROFILE_INSIGHTS` — one line per user, prefixed with their username in bold: `**username** — sentence` (use `\n` between lines)
 
 # Constraints
 
