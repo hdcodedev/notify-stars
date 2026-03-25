@@ -1,15 +1,3 @@
-# Kilo Webhook Prompt Template
-
-Paste this into the prompt template field when configuring your webhook at `app.kilo.ai/cloud/webhooks/new`.
-
-## Prerequisites
-
-In the **Agent Environment Profile**, add:
-- `DISCORD_WEBHOOK_URL` — your Discord channel webhook URL (as a secret)
-
-## Template
-
-````markdown
 You received a webhook with new GitHub stargazers. Send a Discord notification.
 
 ## Data
@@ -51,4 +39,3 @@ curl -s -X POST "$DISCORD_WEBHOOK_URL" \
 - Max 10 stargazers. If more, add "and X more".
 - No bio? Say "No public profile data".
 - Task is complete after running curl.
-````
