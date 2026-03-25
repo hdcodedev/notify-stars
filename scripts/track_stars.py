@@ -164,6 +164,13 @@ def post_to_kilo_webhook(payload: dict):
 
 
 def main():
+    test_mode = "--test" in sys.argv
+    test_sample_size = 3  # Number of stargazers to use in test mode
+
+    if test_mode:
+        print("=== TEST MODE ===")
+        print(f"Will pick last {test_sample_size} stargazers and force webhook.\n")
+
     print(f"Fetching stargazers for {TRACKED_REPO}...")
     current_stargazers = fetch_stargazers(TRACKED_REPO)
     current_total = len(current_stargazers)
@@ -174,22 +181,35 @@ def main():
     prev_usernames = {s["username"] for s in prev_state.get("stargazers", [])}
     prev_total = prev_state.get("total_stars", 0)
 
-    # Find new stargazers
-    new_stargazers = find_new_stargazers(current_stargazers, prev_usernames)
-
-    is_first_run = prev_total == 0 and prev_state["last_checked"] is None
-
-    if is_first_run:
-        print(f"First run: recording {current_total} stargazers as baseline.")
-        new_stargazers = []  # Don't notify on first run
+    if test_mode:
+        # Pick the last N stargazers (most recent) as "new"
+        new_stargazers = []
+        for s in current_stargazers[-test_sample_size:]:
+            new_stargazers.append({
+                "username": s["user"]["login"],
+                "starred_at": s["starred_at"],
+                "profile_url": s["user"]["html_url"],
+                "avatar_url": s["user"]["avatar_url"],
+            })
+        is_first_run = False
+        print(f"Test mode: picked {len(new_stargazers)} recent stargazers.")
     else:
-        print(f"New stargazers since last check: {len(new_stargazers)}")
-        lost = prev_total - current_total if prev_total > current_total else 0
-        if lost > 0:
-            print(f"Stars lost since last check: {lost}")
+        # Find new stargazers
+        new_stargazers = find_new_stargazers(current_stargazers, prev_usernames)
+        is_first_run = prev_total == 0 and prev_state["last_checked"] is None
 
-    # Save current state (always, so we have a baseline)
-    save_state(current_stargazers, current_total)
+        if is_first_run:
+            print(f"First run: recording {current_total} stargazers as baseline.")
+            new_stargazers = []  # Don't notify on first run
+        else:
+            print(f"New stargazers since last check: {len(new_stargazers)}")
+            lost = prev_total - current_total if prev_total > current_total else 0
+            if lost > 0:
+                print(f"Stars lost since last check: {lost}")
+
+    # Save current state (skip in test mode to preserve baseline)
+    if not test_mode:
+        save_state(current_stargazers, current_total)
 
     new_count = len(new_stargazers)
     net_change = current_total - prev_total
@@ -199,6 +219,8 @@ def main():
     if github_summary:
         with open(github_summary, "a") as f:
             f.write("## Star Tracker Report\n")
+            if test_mode:
+                f.write("> **TEST MODE** — forced webhook with recent stargazers\n\n")
             f.write(f"- **Repo:** {TRACKED_REPO}\n")
             f.write(f"- **Total Stars:** {current_total}\n")
             f.write(f"- **New Stars:** {new_count}\n")
@@ -214,7 +236,7 @@ def main():
         enriched = enrich_stargazers(new_stargazers)
 
         payload = {
-            "event": "new_stargazers",
+            "event": "test_stargazers" if test_mode else "new_stargazers",
             "repo": TRACKED_REPO,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "summary": {

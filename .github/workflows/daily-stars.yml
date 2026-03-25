@@ -6,6 +6,12 @@ on:
     - cron: "0 9 * * *"
   workflow_dispatch:
     # Allow manual trigger for testing
+    inputs:
+      test_mode:
+        description: "Run in test mode (picks last 3 stargazers, forces webhook)"
+        required: false
+        default: "false"
+        type: boolean
 
 permissions:
   contents: write  # Needed to commit updated stargazers.json
@@ -26,7 +32,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           KILO_WEBHOOK_URL: ${{ secrets.KILO_WEBHOOK_URL }}
-        run: python scripts/track_stars.py
+        run: |
+          ARGS=""
+          if [ "${{ inputs.test_mode }}" = "true" ]; then
+            ARGS="--test"
+          fi
+          python scripts/track_stars.py $ARGS
 
       - name: Commit updated star data
         run: |
