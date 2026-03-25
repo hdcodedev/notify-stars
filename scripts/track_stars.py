@@ -149,9 +149,18 @@ def post_to_kilo_webhook(payload: dict):
         return
 
     data = json.dumps(payload).encode("utf-8")
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "notify-stars-bot/1.0",
+    }
     if KILO_WEBHOOK_SECRET:
         headers[KILO_WEBHOOK_SECRET_HEADER] = KILO_WEBHOOK_SECRET
+
+    # Log request details (without leaking the secret value)
+    safe_headers = {k: ("***" if k == KILO_WEBHOOK_SECRET_HEADER else v) for k, v in headers.items()}
+    print(f"POST {KILO_WEBHOOK_URL}")
+    print(f"Headers: {json.dumps(safe_headers)}")
+    print(f"Payload size: {len(data)} bytes")
 
     req = urllib.request.Request(
         KILO_WEBHOOK_URL,
@@ -165,8 +174,10 @@ def post_to_kilo_webhook(payload: dict):
             print(f"Kilo webhook response: {resp.status}")
     except urllib.error.HTTPError as e:
         body = e.read().decode() if e.fp else ""
-        print(f"Kilo webhook error: {e.code} {body}", file=sys.stderr)
-        # Don't fail the workflow — star tracking still succeeded
+        print(f"Kilo webhook HTTP error: {e.code} {e.reason}")
+        print(f"Response body: {body}")
+    except urllib.error.URLError as e:
+        print(f"Kilo webhook connection error: {e.reason}")
 
 
 def main():
