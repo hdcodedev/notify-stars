@@ -35,7 +35,7 @@ Then immediately run this curl command, replacing the five ALL_CAPS placeholders
 ```bash
 curl -s -X POST "$DISCORD_WEBHOOK_URL" \
   -H "Content-Type: application/json" \
-  -d '{"username":"Star Tracker","embeds":[{"title":"Star Update: REPO_NAME","url":"https://github.com/REPO_NAME","color":16766720,"fields":[{"name":"Total Stars","value":"TOTAL_STARS","inline":true},{"name":"New Stars","value":"+NEW_COUNT","inline":true},{"name":"Net Change","value":"+NET_CHANGE","inline":true},{"name":"New Stargazers","value":"STARGAZER_LIST"},{"name":"Profile Insights","value":"PROFILE_INSIGHTS"}],"footer":{"text":"notify-stars"}}]}'
+  -d '{"username":"Star Tracker","embeds":[{"title":"Star Update: REPO_NAME","url":"https://github.com/REPO_NAME","color":16766720,"fields":[{"name":"Total Stars","value":"**TOTAL_STARS**","inline":true},{"name":"New Stars","value":"**+NEW_COUNT**","inline":true},{"name":"Net Change","value":"**+NET_CHANGE**","inline":true},{"name":"New Stargazers","value":"STARGAZER_LIST"},{"name":"Profile Insights","value":"PROFILE_INSIGHTS"}],"footer":{"text":"notify-stars"}}]}'
 ```
 
 Placeholders:
