@@ -23,7 +23,7 @@ TRACKED_REPO = os.environ.get("TRACKED_REPO", "HDCharts/charts")
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 DATA_FILE = os.environ.get("DATA_FILE", "data/stargazers.json")
 KILO_WEBHOOK_URL = os.environ.get("KILO_WEBHOOK_URL", "")
-KILO_WEBHOOK_SECRET_HEADER = os.environ.get("KILO_WEBHOOK_SECRET_HEADER", "x-notify-stars-key")
+KILO_WEBHOOK_SECRET_HEADER = os.environ.get("KILO_WEBHOOK_SECRET_HEADER", "") or "x-notify-stars-key"
 KILO_WEBHOOK_SECRET = os.environ.get("KILO_WEBHOOK_SECRET", "")
 GITHUB_API = "https://api.github.com"
 
