@@ -25,7 +25,10 @@ From the payload above, extract these values:
 - `summary.net_change` — net change
 - `new_stargazers` — list of new stargazers
 
-For each stargazer, write one sentence about who they are based on their bio, company, location, repos, and followers. If a user has no bio and no identifying info, write "No public profile data".
+For each stargazer, write one sentence about who they are. Follow this priority:
+- If they work at a notable company (e.g. Google, Meta, ByteDance, Microsoft, Apple, Amazon, JetBrains, Netflix, Uber, Airbnb, any well-known tech company), **lead with that** — e.g. "Engineer at Google with 400+ followers."
+- Otherwise use their bio, location, follower count, and repo count to summarize them.
+- If a user has no bio and no identifying info, write "No public profile data".
 
 Then immediately run this curl command, replacing the five ALL_CAPS placeholders:
 
