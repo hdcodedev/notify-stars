@@ -10,23 +10,19 @@ In the **Agent Environment Profile**, add:
 ## Template
 
 ````markdown
-You received a GitHub stargazer webhook. Your ONLY job is to send a Discord notification.
+You received a webhook with new GitHub stargazers. Send a Discord notification.
 
-## Step 1: Read the payload
-
-The incoming data is:
+## Data
 
 ```json
 {{bodyJson}}
 ```
 
-## Step 2: Analyze stargazers
+## Steps
 
-For each user in `new_stargazers`, write ONE sentence about who they are based on their bio, repos, location, and followers.
+1. For each user in `new_stargazers`, write one sentence about who they are based on their bio, repos, location, and followers.
 
-## Step 3: Send to Discord
-
-Run this EXACT command, replacing the placeholders with real values:
+2. Run this curl command, replacing YOUR VALUES:
 
 ```
 curl -s -X POST "$DISCORD_WEBHOOK_URL" \
@@ -41,70 +37,18 @@ curl -s -X POST "$DISCORD_WEBHOOK_URL" \
         {"name": "Total Stars", "value": "{{bodyJson.summary.total_stars}}", "inline": true},
         {"name": "New Stars", "value": "+{{bodyJson.summary.new_count}}", "inline": true},
         {"name": "Net Change", "value": "+{{bodyJson.summary.net_change}}", "inline": true},
-        {"name": "New Stargazers", "value": "YOUR FORMATTED LIST HERE"},
-        {"name": "Profile Insights", "value": "YOUR ONE-LINE INSIGHTS HERE"}
+        {"name": "New Stargazers", "value": "LIST OF USERS AS MARKDOWN LINKS"},
+        {"name": "Profile Insights", "value": "ONE LINE PER USER"}
       ],
       "footer": {"text": "notify-stars"}
     }]
   }'
 ```
 
-Replace:
-- `YOUR FORMATTED LIST HERE` with each stargazer as a markdown link: `[username](profile_url)`, separated by ` | `
-- `YOUR ONE-LINE INSIGHTS HERE` with your analysis, one line per user
-
 ## Rules
 
 - Run the curl command. Do NOT just describe what you would do.
-- Max 10 stargazers in the list. If more, add "and X more" at the end.
-- If a stargazer has no bio, say "No public profile data" instead of guessing.
-- If the event is `test_stargazers`, prefix the title with "[TEST] ".
-- Your task is complete after running curl. Do nothing else.
+- Max 10 stargazers. If more, add "and X more".
+- No bio? Say "No public profile data".
+- Task is complete after running curl.
 ````
-
-## Available Variables
-
-These variables are resolved by Kilo when the webhook fires:
-
-| Variable | Description |
-|----------|-------------|
-| `{{body}}` | Raw request body |
-| `{{bodyJson}}` | Parsed JSON body (pretty-printed) |
-| `{{headers}}` | Request headers |
-| `{{method}}` | HTTP method (GET, POST, etc.) |
-| `{{path}}` | Request path after trigger ID |
-| `{{query}}` | Query string parameters |
-| `{{sourceIp}}` | Client IP address |
-| `{{timestamp}}` | Request timestamp |
-
-## Example Payload
-
-The webhook receives a payload like this from `track_stars.py`:
-
-```json
-{
-  "event": "new_stargazers",
-  "repo": "HDCharts/charts",
-  "timestamp": "2026-03-25T09:00:00Z",
-  "summary": {
-    "new_count": 3,
-    "total_stars": 425,
-    "net_change": 3
-  },
-  "new_stargazers": [
-    {
-      "username": "octocat",
-      "starred_at": "2026-03-25T08:30:00Z",
-      "profile_url": "https://github.com/octocat",
-      "avatar_url": "https://avatars.githubusercontent.com/u/583231?v=4",
-      "name": "The Octocat",
-      "bio": "GitHub mascot",
-      "company": "@github",
-      "location": "San Francisco",
-      "public_repos": 8,
-      "followers": 10000,
-      "following": 9
-    }
-  ]
-}
-```
