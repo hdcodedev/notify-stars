@@ -35,7 +35,7 @@ Then immediately run this curl command, replacing the five ALL_CAPS placeholders
 ```bash
 curl -s -X POST "$DISCORD_WEBHOOK_URL" \
   -H "Content-Type: application/json" \
-  -d '{"username":"Star Tracker","embeds":[{"title":"Star Update: REPO_NAME","url":"https://github.com/REPO_NAME","color":16766720,"fields":[{"name":"Total Stars","value":"**TOTAL_STARS**","inline":true},{"name":"New Stars","value":"**+NEW_COUNT**","inline":true},{"name":"Net Change","value":"**+NET_CHANGE**","inline":true},{"name":"New Stargazers","value":"STARGAZER_LIST"},{"name":"Profile Insights","value":"PROFILE_INSIGHTS"}],"footer":{"text":"notify-stars"}}]}'
+  -d '{"username":"Star Tracker","embeds":[{"title":"Star Update: REPO_NAME","url":"https://github.com/REPO_NAME","color":16766720,"fields":[{"name":"Total Stars","value":"**TOTAL_STARS**","inline":true},{"name":"New Stars","value":"**+NEW_COUNT**","inline":true},{"name":"Net Change","value":"**+NET_CHANGE**","inline":true},{"name":"New Stargazers","value":"STARGAZERS"}],"footer":{"text":"notify-stars"}}]}'
 ```
 
 Placeholders:
@@ -43,11 +43,10 @@ Placeholders:
 - `TOTAL_STARS` — value of `summary.total_stars`
 - `NEW_COUNT` — value of `summary.new_count`
 - `NET_CHANGE` — value of `summary.net_change`
-- `STARGAZER_LIST` — each user as `[username](profile_url)` separated by ` | `
-- `PROFILE_INSIGHTS` — one line per user, prefixed with their username in bold: `**username** — sentence` (use `\n` between lines)
+- `STARGAZERS` — one line per user combining link and insight: `[username](profile_url) — sentence` (use `\n` between lines)
 
 # Constraints
 
 - Run the curl command immediately. Do not describe what you would do.
-- Max 10 stargazers. If more, append "and X more" to the list.
+- Max 10 stargazers. If more, append a final line "and X more".
 - Done after running curl. Nothing else.
