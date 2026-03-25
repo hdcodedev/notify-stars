@@ -10,47 +10,56 @@ In the **Agent Environment Profile**, add:
 ## Template
 
 ````markdown
-## Context
+You received a GitHub stargazer webhook. Your ONLY job is to send a Discord notification.
 
-You have received a GitHub stargazer tracking event. The incoming webhook payload is:
+## Step 1: Read the payload
+
+The incoming data is:
 
 ```json
 {{bodyJson}}
 ```
 
-## Task
+## Step 2: Analyze stargazers
 
-1. Read the `new_stargazers` array from the payload above.
+For each user in `new_stargazers`, write ONE sentence about who they are based on their bio, repos, location, and followers.
 
-2. For each stargazer, review their profile data (bio, location, public_repos, followers, etc.) and write a one-line insight about who they are and what they likely work on.
+## Step 3: Send to Discord
 
-3. Compose a Discord notification using the `DISCORD_WEBHOOK_URL` environment variable. POST to it with the following structure:
+Run this EXACT command, replacing the placeholders with real values:
 
-```json
-{
-  "username": "Star Tracker",
-  "embeds": [{
-    "title": "Star Update: {{bodyJson.repo}}",
-    "url": "https://github.com/{{bodyJson.repo}}",
-    "color": 16766720,
-    "fields": [
-      { "name": "Total Stars", "value": "{{bodyJson.summary.total_stars}}", "inline": true },
-      { "name": "New Stars", "value": "+{{bodyJson.summary.new_count}}", "inline": true },
-      { "name": "Net Change", "value": "+{{bodyJson.summary.net_change}}", "inline": true },
-      { "name": "New Stargazers", "value": "<your formatted list here>" },
-      { "name": "Profile Insights", "value": "<your one-line insights here>" }
-    ],
-    "footer": { "text": "notify-stars" }
-  }]
-}
 ```
+curl -s -X POST "$DISCORD_WEBHOOK_URL" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "Star Tracker",
+    "embeds": [{
+      "title": "Star Update: {{bodyJson.repo}}",
+      "url": "https://github.com/{{bodyJson.repo}}",
+      "color": 16766720,
+      "fields": [
+        {"name": "Total Stars", "value": "{{bodyJson.summary.total_stars}}", "inline": true},
+        {"name": "New Stars", "value": "+{{bodyJson.summary.new_count}}", "inline": true},
+        {"name": "Net Change", "value": "+{{bodyJson.summary.net_change}}", "inline": true},
+        {"name": "New Stargazers", "value": "YOUR FORMATTED LIST HERE"},
+        {"name": "Profile Insights", "value": "YOUR ONE-LINE INSIGHTS HERE"}
+      ],
+      "footer": {"text": "notify-stars"}
+    }]
+  }'
+```
+
+Replace:
+- `YOUR FORMATTED LIST HERE` with each stargazer as a markdown link: `[username](profile_url)`, separated by ` | `
+- `YOUR ONE-LINE INSIGHTS HERE` with your analysis, one line per user
 
 ## Rules
 
-- Max 10 stargazers listed in the embed (Discord limits). If more, add "and X more" at the end.
-- Keep insights to one sentence per user. Be specific — mention their tech stack, domain, or notable repos if visible.
-- If a stargazer has no bio or minimal data, say "No public profile data" instead of guessing.
-- Do NOT include any other output. Only POST the Discord webhook.
+- Run the curl command. Do NOT just describe what you would do.
+- Max 10 stargazers in the list. If more, add "and X more" at the end.
+- If a stargazer has no bio, say "No public profile data" instead of guessing.
+- If the event is `test_stargazers`, prefix the title with "[TEST] ".
+- Your task is complete after running curl. Do nothing else.
 ````
 
 ## Available Variables
@@ -79,7 +88,7 @@ The webhook receives a payload like this from `track_stars.py`:
   "timestamp": "2026-03-25T09:00:00Z",
   "summary": {
     "new_count": 3,
-    "total_stars": 142,
+    "total_stars": 425,
     "net_change": 3
   },
   "new_stargazers": [
