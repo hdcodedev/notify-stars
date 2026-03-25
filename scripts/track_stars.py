@@ -23,6 +23,8 @@ TRACKED_REPO = os.environ.get("TRACKED_REPO", "HDCharts/charts")
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 DATA_FILE = os.environ.get("DATA_FILE", "data/stargazers.json")
 KILO_WEBHOOK_URL = os.environ.get("KILO_WEBHOOK_URL", "")
+KILO_WEBHOOK_SECRET_HEADER = os.environ.get("KILO_WEBHOOK_SECRET_HEADER", "x-webhook-secret")
+KILO_WEBHOOK_SECRET = os.environ.get("KILO_WEBHOOK_SECRET", "")
 GITHUB_API = "https://api.github.com"
 
 
@@ -147,10 +149,14 @@ def post_to_kilo_webhook(payload: dict):
         return
 
     data = json.dumps(payload).encode("utf-8")
+    headers = {"Content-Type": "application/json"}
+    if KILO_WEBHOOK_SECRET:
+        headers[KILO_WEBHOOK_SECRET_HEADER] = KILO_WEBHOOK_SECRET
+
     req = urllib.request.Request(
         KILO_WEBHOOK_URL,
         data=data,
-        headers={"Content-Type": "application/json"},
+        headers=headers,
         method="POST",
     )
 
