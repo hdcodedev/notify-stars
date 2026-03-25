@@ -30,9 +30,7 @@ jobs:
 
       - name: Fetch stargazers and notify via Kilo webhook
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           KILO_WEBHOOK_URL: ${{ secrets.KILO_WEBHOOK_URL }}
-          KILO_WEBHOOK_SECRET_HEADER: ${{ vars.KILO_WEBHOOK_SECRET_HEADER }}
           KILO_WEBHOOK_SECRET: ${{ secrets.KILO_WEBHOOK_SECRET }}
         run: |
           ARGS=""

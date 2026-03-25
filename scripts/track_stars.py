@@ -20,11 +20,10 @@ PROFILE_ENRICH_DELAY = 0.5  # seconds between profile fetches to avoid rate limi
 
 # --- Configuration ---
 TRACKED_REPO = os.environ.get("TRACKED_REPO", "HDCharts/charts")
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 DATA_FILE = os.environ.get("DATA_FILE", "data/stargazers.json")
 KILO_WEBHOOK_URL = os.environ.get("KILO_WEBHOOK_URL", "")
-KILO_WEBHOOK_SECRET_HEADER = os.environ.get("KILO_WEBHOOK_SECRET_HEADER", "") or "x-notify-stars-key"
 KILO_WEBHOOK_SECRET = os.environ.get("KILO_WEBHOOK_SECRET", "")
+KILO_WEBHOOK_SECRET_HEADER = "x-notify-stars-key"
 GITHUB_API = "https://api.github.com"
 
 
@@ -40,8 +39,6 @@ def fetch_stargazers(repo: str) -> list[dict]:
         req = urllib.request.Request(url)
         req.add_header("Accept", "application/vnd.github.v3.star+json")
         req.add_header("User-Agent", "notify-stars-bot")
-        if GITHUB_TOKEN:
-            req.add_header("Authorization", f"Bearer {GITHUB_TOKEN}")
 
         try:
             with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as resp:
@@ -112,8 +109,6 @@ def fetch_github_profile(username: str) -> dict | None:
     req = urllib.request.Request(url)
     req.add_header("Accept", "application/vnd.github.v3+json")
     req.add_header("User-Agent", "notify-stars-bot")
-    if GITHUB_TOKEN:
-        req.add_header("Authorization", f"Bearer {GITHUB_TOKEN}")
 
     try:
         with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as resp:
